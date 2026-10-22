@@ -1,6 +1,6 @@
-# Amerika Venture
+# Venture
 
-An Amerika LLC browser based on stable Firefox 158.0.1. Venture pairs a charcoal-and-crimson browser interface with a custom Amerika start page, its own compass emblem, and shortcuts to Amerika Social and Amerika Office.
+An Amerika LLC browser based on stable Firefox 158.0.1. Venture pairs a charcoal-and-crimson browser interface with a custom Amerika start page, its own compass emblem, and shortcuts to Amerika Social and Makk Office.
 
 ## Builds and source
 

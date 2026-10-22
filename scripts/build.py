@@ -5,17 +5,14 @@ ROOT=Path(__file__).resolve().parents[1]
 META=json.loads((ROOT/'upstream.json').read_text())
 TARGETS={'linux-x64':('linux-x86_64','firefox-{v}.tar.xz'),'linux-arm64':('linux-aarch64','firefox-{v}.tar.xz'),'windows-x64':('win64','Firefox Setup {v}.exe'),'windows-arm64':('win64-aarch64','Firefox Setup {v}.exe'),'macos-x64':('mac','Firefox {v}.dmg'),'macos-arm64':('mac','Firefox {v}.dmg')}
 BRAND_FTL='''-brand-shorter-name = Venture
--brand-short-name = Amerika Venture
--brand-shortcut-name = Amerika Venture
--brand-full-name = Amerika Venture
--brand-product-name = Amerika Venture
--vendor-short-name = Amerika LLC
-trademarkInfo = Amerika Venture is an Amerika LLC browser based on Mozilla Firefox. Firefox is a trademark of the Mozilla Foundation.
+-brand-short-name = Venture
+-brand-shortcut-name = Venture
+-brand-full-name = Venture
+-brand-product-name = Venture
+-vendor-short-name = Cherry Blossom LLC
+trademarkInfo = Venture is an Cherry Blossom LLC browser based on Mozilla Firefox. Firefox is a trademark of the Mozilla Foundation.
 '''
-BROWSER_CSS='''
-:root{--toolbar-bgcolor:#141417!important;--toolbar-color:#f7f7fa!important;--lwt-accent-color:#0e0e10!important;--lwt-text-color:#f7f7fa!important;--chrome-content-separator-color:#29292f!important;--tab-selected-bgcolor:#35212a!important;--toolbarbutton-icon-fill:#e8dce6!important;--toolbar-field-background-color:#1b1b20!important;--toolbar-field-color:#f7f7fa!important;--focus-outline-color:#d94b63!important;--urlbarView-highlight-background:#642539!important}
-#TabsToolbar{background:#0e0e10!important}.tab-background[selected]{border-bottom:2px solid #c82433!important;border-radius:9px 9px 0 0!important}#urlbar-background{border-radius:12px!important}#navigator-toolbox{border-bottom:1px solid #29292f!important}
-'''
+BROWSER_CSS=(ROOT/'assets/venture-classic.css').read_text()
 
 def jar_entries(path):
  data=Path(path).read_bytes()
@@ -38,13 +35,13 @@ def brand_package(app,system):
  jar=resource/'browser/omni.ja';entries=jar_entries(jar)
  ftl='localization/en-US/branding/brand.ftl';properties='chrome/en-US/locale/branding/brand.properties'
  if ftl not in entries:raise RuntimeError('Upstream branding layout changed; inspect before building.')
- entries[ftl]=BRAND_FTL.encode();entries[properties]=b'brandShorterName=Venture\nbrandShortName=Amerika Venture\nbrandFullName=Amerika Venture\n'
+ entries[ftl]=BRAND_FTL.encode();entries[properties]=b'brandShorterName=Venture\nbrandShortName=Venture\nbrandFullName=Venture\n'
  mark=(ROOT/'assets/venture.svg').read_bytes()
  for name in list(entries):
   if '/content/branding/' not in name:continue
   base=Path(name).name
   if base.endswith('.svg') and any(x in base for x in ['logo','wordmark']):
-   if 'wordmark' in base:entries[name]=b'<svg xmlns="http://www.w3.org/2000/svg" width="300" height="60"><text x="0" y="43" fill="#f7f7fa" font-family="sans-serif" font-size="35" font-weight="600">Amerika Venture</text></svg>'
+   if 'wordmark' in base:entries[name]=b'<svg xmlns="http://www.w3.org/2000/svg" width="300" height="60"><text x="0" y="43" fill="#f7f7fa" font-family="sans-serif" font-size="35" font-weight="600">Venture</text></svg>'
    else:entries[name]=mark
   elif base.endswith('.png'):
    m=re.search(r'icon(\d+)',base);size=int(m.group(1)) if m else 256
@@ -60,26 +57,26 @@ def brand_package(app,system):
  if css not in entries:raise RuntimeError('Upstream browser stylesheet moved.')
  entries[css]+=BROWSER_CSS.encode();write_jar(jar,entries)
  ini=resource/'application.ini';config=configparser.ConfigParser(interpolation=None);config.optionxform=str;config.read(ini)
- config['App'].update(Name='AmerikaVenture',Vendor='Amerika LLC',RemotingName='amerika-venture',Profile='AmerikaVenture')
+ config['App'].update(Name='Venture',Vendor='Cherry Blossom LLC',RemotingName='amerika-venture',Profile='Venture')
  with ini.open('w')as f:config.write(f,space_around_delimiters=False)
  icons=resource/'browser/chrome/icons/default';icons.mkdir(parents=True,exist_ok=True)
  for size in [16,32,48,64,128]:shutil.copy2(ROOT/f'assets/icon{size}.png',icons/f'default{size}.png')
  distribution=resource/'distribution';distribution.mkdir(exist_ok=True)
- (distribution/'distribution.ini').write_text('[Global]\nid=com.amerika.venture\nversion='+META['version']+'\nabout=Amerika Venture by Amerika LLC\n[Preferences]\napp.distributor="Amerika LLC"\napp.distributor.channel="venture"\n')
- policies={'policies':{'Homepage':{'URL':'resource://venture/index.html','Locked':False,'StartPage':'homepage'},'DisableTelemetry':True,'DisableFirefoxStudies':True,'DisableAppUpdate':True,'DontCheckDefaultBrowser':True,'DisplayBookmarksToolbar':'never','Preferences':{'browser.startup.homepage_override.mstone':{'Value':'ignore','Status':'default'},'browser.aboutwelcome.enabled':{'Value':False,'Status':'default'},'extensions.activeThemeID':{'Value':'firefox-compact-dark@mozilla.org','Status':'default'},'app.releaseNotesURL':{'Value':'https://github.com/danecohn/AmerikaVenture/releases','Status':'default'},'browser.startup.homepage_override.buildID':{'Value':'ignore','Status':'default'}}}}
+ (distribution/'distribution.ini').write_text('[Global]\nid=com.amerika.venture\nversion='+META['version']+'\nabout=Venture by Cherry Blossom LLC\n[Preferences]\napp.distributor="Cherry Blossom LLC"\napp.distributor.channel="venture"\n')
+ policies={'policies':{'Homepage':{'URL':'resource://venture/index.html','Locked':False,'StartPage':'homepage'},'DisableTelemetry':True,'DisableFirefoxStudies':True,'DisableAppUpdate':True,'DontCheckDefaultBrowser':True,'DisplayBookmarksToolbar':'always','Preferences':{'browser.startup.homepage_override.mstone':{'Value':'ignore','Status':'default'},'browser.aboutwelcome.enabled':{'Value':False,'Status':'default'},'extensions.activeThemeID':{'Value':'default-theme@mozilla.org','Status':'default'},'app.releaseNotesURL':{'Value':'https://github.com/danecohn/AmerikaVenture/releases','Status':'default'},'browser.startup.homepage_override.buildID':{'Value':'ignore','Status':'default'}}}}
  (distribution/'policies.json').write_text(json.dumps(policies,indent=2))
- (resource/'AMERIKA-SOURCE.json').write_text(json.dumps({**META,'product':'Amerika Venture','method':'Rebuilt chrome resources over unmodified stable Gecko binaries','modifications':'https://github.com/danecohn/AmerikaVenture','updates':'Manual: download and install a new Venture release. Mozilla automatic app updates are disabled to preserve this distribution.'},indent=2))
+ (resource/'AMERIKA-SOURCE.json').write_text(json.dumps({**META,'product':'Venture','method':'Rebuilt chrome resources over unmodified stable Gecko binaries','modifications':'https://github.com/danecohn/AmerikaVenture','updates':'Manual: download and install a new Venture release. Mozilla automatic app updates are disabled to preserve this distribution.'},indent=2))
  shutil.copy2(ROOT/'LICENSE',resource/'AMERIKA-LICENSE.txt');shutil.copy2(ROOT/'README.md',resource/'AMERIKA-README.md')
  if system=='windows':
   from windows_resources import replace_resources
   replace_resources(resource/'firefox.exe',ROOT/'assets/venture.ico')
   for manifest in resource.glob('*.VisualElementsManifest.xml'):
-   text=manifest.read_text();text=re.sub(r'DisplayName="[^"]*"','DisplayName="Amerika Venture"',text);manifest.write_text(text)
+   text=manifest.read_text();text=re.sub(r'DisplayName="[^"]*"','DisplayName="Venture"',text);manifest.write_text(text)
   for f in ['VisualElements_150.png','VisualElements_70.png']:
    p=resource/'browser/VisualElements'/f
    if p.exists():shutil.copy2(ROOT/'assets/icon256.png',p)
  if system=='macos':
-  p=app/'Contents/Info.plist';v=plistlib.loads(p.read_bytes());v.update(CFBundleName='Amerika Venture',CFBundleDisplayName='Amerika Venture',CFBundleIdentifier='com.amerika.venture',CFBundleIconFile='venture.icns');p.write_bytes(plistlib.dumps(v));shutil.copy2(ROOT/'assets/venture.icns',resource/'venture.icns')
+  p=app/'Contents/Info.plist';v=plistlib.loads(p.read_bytes());v.update(CFBundleName='Venture',CFBundleDisplayName='Venture',CFBundleIdentifier='com.amerika.venture',CFBundleIconFile='venture.icns');p.write_bytes(plistlib.dumps(v));shutil.copy2(ROOT/'assets/venture.icns',resource/'venture.icns')
   signature=app/'Contents/_CodeSignature'
   if signature.exists():shutil.rmtree(signature)
   entitlements=ROOT/'assets/entitlements.plist';subprocess.run(['codesign','--force','--deep','--sign','-','--entitlements',str(entitlements),str(app)],check=True)
@@ -105,17 +102,17 @@ def main():
   seven=shutil.which('7z')or r'C:\Program Files\7-Zip\7z.exe';subprocess.run([seven,'x',str(archive),'-o'+str(work),'-y'],check=True,stdout=subprocess.DEVNULL);app=work/'core'
  else:
   result=subprocess.run(['hdiutil','attach','-readonly','-nobrowse','-plist',str(archive)],capture_output=True,check=True);info=plistlib.loads(result.stdout);mount=next(x['mount-point']for x in info['system-entities']if 'mount-point'in x)
-  try:source=next(Path(mount).glob('*.app'));app=work/'Amerika Venture.app';shutil.copytree(source,app,symlinks=True)
+  try:source=next(Path(mount).glob('*.app'));app=work/'Venture.app';shutil.copytree(source,app,symlinks=True)
   finally:subprocess.run(['hdiutil','detach',mount],check=True,stdout=subprocess.DEVNULL)
- resource=brand_package(app,system);args.output.mkdir(parents=True,exist_ok=True);name=f'AmerikaVenture-{system}-{arch}'
+ resource=brand_package(app,system);args.output.mkdir(parents=True,exist_ok=True);name=f'Venture-{system}-{arch}'
  if system=='linux':
-  dest=work/'AmerikaVenture';app.rename(dest)
-  (dest/'AmerikaVenture').write_text('#!/bin/sh\nROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)\nexec "$ROOT/firefox" --name AmerikaVenture --class AmerikaVenture "$@"\n');(dest/'AmerikaVenture').chmod(0o755)
+  dest=work/'Venture';app.rename(dest)
+  (dest/'Venture').write_text('#!/bin/sh\nROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)\nexec "$ROOT/firefox" --name Venture --class Venture "$@"\n');(dest/'Venture').chmod(0o755)
   shutil.copy2(ROOT/'scripts/install-linux.sh',dest/'install-linux.sh');(dest/'install-linux.sh').chmod(0o755)
-  with tarfile.open(args.output/(name+'.tar.gz'),'w:gz')as f:f.add(dest,arcname='AmerikaVenture')
+  with tarfile.open(args.output/(name+'.tar.gz'),'w:gz')as f:f.add(dest,arcname='Venture')
  elif system=='windows':
-  shutil.copy2(app/'firefox.exe',app/'AmerikaVenture.exe');app.rename(work/'AmerikaVenture');shutil.make_archive(str(args.output/name),'zip',work,'AmerikaVenture')
- else:subprocess.run(['hdiutil','create','-volname','Amerika Venture','-srcfolder',str(app),'-ov',str(args.output/(name+'.dmg'))],check=True)
+  shutil.copy2(app/'firefox.exe',app/'Venture.exe');app.rename(work/'Venture');shutil.make_archive(str(args.output/name),'zip',work,'Venture')
+ else:subprocess.run(['hdiutil','create','-volname','Venture','-srcfolder',str(app),'-ov',str(args.output/(name+'.dmg'))],check=True)
  for p in args.output.glob(name+'.*'):
   if p.suffix!='.sha256':p.with_name(p.name+'.sha256').write_text(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n')
  print('Built',name,flush=True)

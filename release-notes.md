@@ -1,4 +1,4 @@
-Amerika Venture 158.0.1 · Early access
+Venture 158.0.1 · Early access
 
 Amerika LLC branding, a custom dark start page, charcoal-and-crimson browser UI, and Amerika Social/Office shortcuts over the unmodified stable Firefox 158.0.1 engine.
 

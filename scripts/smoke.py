@@ -1,7 +1,7 @@
 import argparse,subprocess,tempfile,time,struct
 from pathlib import Path
 p=argparse.ArgumentParser();p.add_argument('--target',required=True);a=p.parse_args();r=Path(__file__).resolve().parents[1];system=a.target.split('-')[0];work=r/'build'/a.target
-exe=work/'AmerikaVenture/firefox'if system=='linux'else work/'Amerika Venture.app/Contents/MacOS/firefox'if system=='macos'else work/'AmerikaVenture/AmerikaVenture.exe'
+exe=work/'Venture/firefox'if system=='linux'else work/'Venture.app/Contents/MacOS/firefox'if system=='macos'else work/'Venture/Venture.exe'
 out=r/'release'/('smoke-'+a.target+'.png')
 with tempfile.TemporaryDirectory()as profile:
  command=[str(exe),'--headless','--no-remote','--profile',profile,'--screenshot',str(out),'--window-size','1440,900','resource://venture/index.html']
