@@ -4,13 +4,13 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 META=json.loads((ROOT/'upstream.json').read_text())
 TARGETS={'linux-x64':('linux-x86_64','firefox-{v}.tar.xz'),'linux-arm64':('linux-aarch64','firefox-{v}.tar.xz'),'windows-x64':('win64','Firefox Setup {v}.exe'),'windows-arm64':('win64-aarch64','Firefox Setup {v}.exe'),'macos-x64':('mac','Firefox {v}.dmg'),'macos-arm64':('mac','Firefox {v}.dmg')}
-BRAND_FTL='''-brand-shorter-name = Venture
--brand-short-name = Venture
--brand-shortcut-name = Venture
--brand-full-name = Venture
--brand-product-name = Venture
--vendor-short-name = Cherry Blossom LLC
-trademarkInfo = Venture is an Cherry Blossom LLC browser based on Mozilla Firefox. Firefox is a trademark of the Mozilla Foundation.
+BRAND_FTL='''-brand-shorter-name = AltStack Venture
+-brand-short-name = AltStack Venture
+-brand-shortcut-name = AltStack Venture
+-brand-full-name = AltStack Venture
+-brand-product-name = AltStack Venture
+-vendor-short-name = AltStack LLC
+trademarkInfo = AltStack AltStack Venture is an AltStack LLC browser based on Mozilla Firefox. Firefox is a trademark of the Mozilla Foundation.
 '''
 BROWSER_CSS=(ROOT/'assets/venture-classic.css').read_text()
 
@@ -41,7 +41,7 @@ def brand_package(app,system):
   if '/content/branding/' not in name:continue
   base=Path(name).name
   if base.endswith('.svg') and any(x in base for x in ['logo','wordmark']):
-   if 'wordmark' in base:entries[name]=b'<svg xmlns="http://www.w3.org/2000/svg" width="300" height="60"><text x="0" y="43" fill="#f7f7fa" font-family="sans-serif" font-size="35" font-weight="600">Venture</text></svg>'
+   if 'wordmark' in base:entries[name]=b'<svg xmlns="http://www.w3.org/2000/svg" width="300" height="60"><text x="0" y="43" fill="#f7f7fa" font-family="sans-serif" font-size="35" font-weight="600">AltStack Venture</text></svg>'
    else:entries[name]=mark
   elif base.endswith('.png'):
    m=re.search(r'icon(\d+)',base);size=int(m.group(1)) if m else 256
@@ -57,12 +57,12 @@ def brand_package(app,system):
  if css not in entries:raise RuntimeError('Upstream browser stylesheet moved.')
  entries[css]+=BROWSER_CSS.encode();write_jar(jar,entries)
  ini=resource/'application.ini';config=configparser.ConfigParser(interpolation=None);config.optionxform=str;config.read(ini)
- config['App'].update(Name='Venture',Vendor='Cherry Blossom LLC',RemotingName='amerika-venture',Profile='Venture')
+ config['App'].update(Name='AltStack Venture',Vendor='AltStack LLC',RemotingName='amerika-venture',Profile='Venture')
  with ini.open('w')as f:config.write(f,space_around_delimiters=False)
  icons=resource/'browser/chrome/icons/default';icons.mkdir(parents=True,exist_ok=True)
  for size in [16,32,48,64,128]:shutil.copy2(ROOT/f'assets/icon{size}.png',icons/f'default{size}.png')
  distribution=resource/'distribution';distribution.mkdir(exist_ok=True)
- (distribution/'distribution.ini').write_text('[Global]\nid=com.amerika.venture\nversion='+META['version']+'\nabout=Venture by Cherry Blossom LLC\n[Preferences]\napp.distributor="Cherry Blossom LLC"\napp.distributor.channel="venture"\n')
+ (distribution/'distribution.ini').write_text('[Global]\nid=com.amerika.venture\nversion='+META['version']+'\nabout=Venture by AltStack LLC\n[Preferences]\napp.distributor="AltStack LLC"\napp.distributor.channel="venture"\n')
  policies={'policies':{'Homepage':{'URL':'resource://venture/index.html','Locked':False,'StartPage':'homepage'},'DisableTelemetry':True,'DisableFirefoxStudies':True,'DisableAppUpdate':True,'DontCheckDefaultBrowser':True,'DisplayBookmarksToolbar':'always','Preferences':{'browser.startup.homepage_override.mstone':{'Value':'ignore','Status':'default'},'browser.aboutwelcome.enabled':{'Value':False,'Status':'default'},'extensions.activeThemeID':{'Value':'default-theme@mozilla.org','Status':'default'},'app.releaseNotesURL':{'Value':'https://github.com/danecohn/AmerikaVenture/releases','Status':'default'},'browser.startup.homepage_override.buildID':{'Value':'ignore','Status':'default'}}}}
  (distribution/'policies.json').write_text(json.dumps(policies,indent=2))
  (resource/'AMERIKA-SOURCE.json').write_text(json.dumps({**META,'product':'Venture','method':'Rebuilt chrome resources over unmodified stable Gecko binaries','modifications':'https://github.com/danecohn/AmerikaVenture','updates':'Manual: download and install a new Venture release. Mozilla automatic app updates are disabled to preserve this distribution.'},indent=2))
@@ -71,12 +71,12 @@ def brand_package(app,system):
   from windows_resources import replace_resources
   replace_resources(resource/'firefox.exe',ROOT/'assets/venture.ico')
   for manifest in resource.glob('*.VisualElementsManifest.xml'):
-   text=manifest.read_text();text=re.sub(r'DisplayName="[^"]*"','DisplayName="Venture"',text);manifest.write_text(text)
+   text=manifest.read_text();text=re.sub(r'DisplayName="[^"]*"','DisplayName="AltStack Venture"',text);manifest.write_text(text)
   for f in ['VisualElements_150.png','VisualElements_70.png']:
    p=resource/'browser/VisualElements'/f
    if p.exists():shutil.copy2(ROOT/'assets/icon256.png',p)
  if system=='macos':
-  p=app/'Contents/Info.plist';v=plistlib.loads(p.read_bytes());v.update(CFBundleName='Venture',CFBundleDisplayName='Venture',CFBundleIdentifier='com.amerika.venture',CFBundleIconFile='venture.icns');p.write_bytes(plistlib.dumps(v));shutil.copy2(ROOT/'assets/venture.icns',resource/'venture.icns')
+  p=app/'Contents/Info.plist';v=plistlib.loads(p.read_bytes());v.update(CFBundleName='AltStack Venture',CFBundleDisplayName='AltStack Venture',CFBundleIdentifier='com.amerika.venture',CFBundleIconFile='venture.icns');p.write_bytes(plistlib.dumps(v));shutil.copy2(ROOT/'assets/venture.icns',resource/'venture.icns')
   signature=app/'Contents/_CodeSignature'
   if signature.exists():shutil.rmtree(signature)
   entitlements=ROOT/'assets/entitlements.plist';subprocess.run(['codesign','--force','--deep','--sign','-','--entitlements',str(entitlements),str(app)],check=True)

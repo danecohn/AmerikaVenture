@@ -11,7 +11,7 @@ cat > "$HOME/.local/share/applications/amerika-venture.desktop" <<EOF
 [Desktop Entry]
 Type=Application
 Name=Venture
-Comment=Amerika LLC browser based on Firefox
+Comment=AltStack LLC browser based on Firefox
 Exec="$TARGET/Venture" %u
 Icon=amerika-venture
 Terminal=false
