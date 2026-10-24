@@ -83,7 +83,7 @@ jobs:
     - name: Publish all six packages together
       env:
         GH_TOKEN: ${{ github.token }}
-        TAG: altstack-venture-v158.0.1
+        TAG: altstack-venture-v158.0.1-r2
       run: 'test "$(find release -maxdepth 1 -type f -name ''AltStackVenture-*'' ! -name ''*.sha256'' | wc -l)" -eq 6
 
         gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --target "$GITHUB_SHA" --title "AltStack Venture"
