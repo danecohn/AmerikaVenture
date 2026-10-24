@@ -1,0 +1,92 @@
+name: Publish AltStack Venture for six platforms
+'on':
+  push:
+    branches:
+    - altstack/alpine-official-logo-20261023
+    paths:
+    - .github/workflows/altstack-release.yml
+    - amerika/**
+    - assets/**
+    - packaging/**
+    - scripts/**
+    - start/**
+    - build.py
+    - requirements*.txt
+    - upstream.json
+    - release-notes.md
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: altstack-venture-release
+  cancel-in-progress: true
+jobs:
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - target: windows-x64
+          runner: windows-2025
+          python_arch: x64
+        - target: windows-arm64
+          runner: windows-11-arm
+          python_arch: arm64
+        - target: macos-x64
+          runner: macos-15-intel
+          python_arch: x64
+        - target: macos-arm64
+          runner: macos-15
+          python_arch: arm64
+        - target: linux-x64
+          runner: ubuntu-24.04
+          python_arch: x64
+        - target: linux-arm64
+          runner: ubuntu-24.04-arm
+          python_arch: arm64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 40
+    steps:
+    - uses: actions/checkout@v6
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.13'
+        architecture: ${{ matrix.python_arch }}
+    - name: Install Linux runtime libraries
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install -y xvfb libegl1 libopengl0 libxcb-cursor0 libxcb-xinerama0 libxkbcommon-x11-0
+        libdbus-1-3 libasound2t64 libgtk-3-0 libsecret-1-0
+    - name: Build AltStack browser
+      run: python scripts/build.py --target ${{ matrix.target }}
+    - name: Launch browser on matching CPU
+      run: python scripts/smoke.py --target ${{ matrix.target }}
+    - uses: actions/upload-artifact@v7
+      with:
+        name: Venture-${{ matrix.target }}
+        path: release/AltStackVenture-*
+        if-no-files-found: error
+    - uses: actions/upload-artifact@v7
+      with:
+        name: Venture-preview-${{ matrix.target }}
+        path: release/smoke-*.png
+        if-no-files-found: error
+  publish:
+    needs: package
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v6
+    - uses: actions/download-artifact@v8
+      with:
+        pattern: Venture-*
+        path: release
+        merge-multiple: true
+    - name: Publish all six packages together
+      env:
+        GH_TOKEN: ${{ github.token }}
+        TAG: altstack-venture-v158.0.1
+      run: 'test "$(find release -maxdepth 1 -type f -name ''AltStackVenture-*'' ! -name ''*.sha256'' | wc -l)" -eq 6
+
+        gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --target "$GITHUB_SHA" --title "AltStack Venture"
+        --notes-file release-notes.md --prerelease
+
+        gh release upload "$TAG" release/AltStackVenture-* --clobber'

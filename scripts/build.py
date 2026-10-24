@@ -10,7 +10,7 @@ BRAND_FTL='''-brand-shorter-name = AltStack Venture
 -brand-full-name = AltStack Venture
 -brand-product-name = AltStack Venture
 -vendor-short-name = AltStack LLC
-trademarkInfo = AltStack AltStack Venture is an AltStack LLC browser based on Mozilla Firefox. Firefox is a trademark of the Mozilla Foundation.
+trademarkInfo = AltStack Venture is an AltStack LLC browser based on Mozilla Firefox. Firefox is a trademark of the Mozilla Foundation.
 '''
 BROWSER_CSS=(ROOT/'assets/venture-classic.css').read_text()
 
@@ -57,16 +57,16 @@ def brand_package(app,system):
  if css not in entries:raise RuntimeError('Upstream browser stylesheet moved.')
  entries[css]+=BROWSER_CSS.encode();write_jar(jar,entries)
  ini=resource/'application.ini';config=configparser.ConfigParser(interpolation=None);config.optionxform=str;config.read(ini)
- config['App'].update(Name='AltStack Venture',Vendor='AltStack LLC',RemotingName='amerika-venture',Profile='Venture')
+ config['App'].update(Name='AltStack Venture',Vendor='AltStack LLC',RemotingName='altstack-venture',Profile='Venture')
  with ini.open('w')as f:config.write(f,space_around_delimiters=False)
  icons=resource/'browser/chrome/icons/default';icons.mkdir(parents=True,exist_ok=True)
  for size in [16,32,48,64,128]:shutil.copy2(ROOT/f'assets/icon{size}.png',icons/f'default{size}.png')
  distribution=resource/'distribution';distribution.mkdir(exist_ok=True)
- (distribution/'distribution.ini').write_text('[Global]\nid=com.amerika.venture\nversion='+META['version']+'\nabout=Venture by AltStack LLC\n[Preferences]\napp.distributor="AltStack LLC"\napp.distributor.channel="venture"\n')
+ (distribution/'distribution.ini').write_text('[Global]\nid=org.altstack.venture\nversion='+META['version']+'\nabout=Venture by AltStack LLC\n[Preferences]\napp.distributor="AltStack LLC"\napp.distributor.channel="venture"\n')
  policies={'policies':{'Homepage':{'URL':'resource://venture/index.html','Locked':False,'StartPage':'homepage'},'DisableTelemetry':True,'DisableFirefoxStudies':True,'DisableAppUpdate':True,'DontCheckDefaultBrowser':True,'DisplayBookmarksToolbar':'always','Preferences':{'browser.startup.homepage_override.mstone':{'Value':'ignore','Status':'default'},'browser.aboutwelcome.enabled':{'Value':False,'Status':'default'},'extensions.activeThemeID':{'Value':'default-theme@mozilla.org','Status':'default'},'app.releaseNotesURL':{'Value':'https://github.com/danecohn/AmerikaVenture/releases','Status':'default'},'browser.startup.homepage_override.buildID':{'Value':'ignore','Status':'default'}}}}
  (distribution/'policies.json').write_text(json.dumps(policies,indent=2))
- (resource/'AMERIKA-SOURCE.json').write_text(json.dumps({**META,'product':'Venture','method':'Rebuilt chrome resources over unmodified stable Gecko binaries','modifications':'https://github.com/danecohn/AmerikaVenture','updates':'Manual: download and install a new Venture release. Mozilla automatic app updates are disabled to preserve this distribution.'},indent=2))
- shutil.copy2(ROOT/'LICENSE',resource/'AMERIKA-LICENSE.txt');shutil.copy2(ROOT/'README.md',resource/'AMERIKA-README.md')
+ (resource/'ALTSTACK-SOURCE.json').write_text(json.dumps({**META,'product':'Venture','method':'Rebuilt chrome resources over unmodified stable Gecko binaries','modifications':'https://github.com/danecohn/AmerikaVenture','updates':'Manual: download and install a new Venture release. Mozilla automatic app updates are disabled to preserve this distribution.'},indent=2))
+ shutil.copy2(ROOT/'LICENSE',resource/'ALTSTACK-LICENSE.txt');shutil.copy2(ROOT/'README.md',resource/'ALTSTACK-README.md')
  if system=='windows':
   from windows_resources import replace_resources
   replace_resources(resource/'firefox.exe',ROOT/'assets/venture.ico')
@@ -76,7 +76,7 @@ def brand_package(app,system):
    p=resource/'browser/VisualElements'/f
    if p.exists():shutil.copy2(ROOT/'assets/icon256.png',p)
  if system=='macos':
-  p=app/'Contents/Info.plist';v=plistlib.loads(p.read_bytes());v.update(CFBundleName='AltStack Venture',CFBundleDisplayName='AltStack Venture',CFBundleIdentifier='com.amerika.venture',CFBundleIconFile='venture.icns');p.write_bytes(plistlib.dumps(v));shutil.copy2(ROOT/'assets/venture.icns',resource/'venture.icns')
+  p=app/'Contents/Info.plist';v=plistlib.loads(p.read_bytes());v.update(CFBundleName='AltStack Venture',CFBundleDisplayName='AltStack Venture',CFBundleIdentifier='org.altstack.venture',CFBundleIconFile='venture.icns');p.write_bytes(plistlib.dumps(v));shutil.copy2(ROOT/'assets/venture.icns',resource/'venture.icns')
   signature=app/'Contents/_CodeSignature'
   if signature.exists():shutil.rmtree(signature)
   entitlements=ROOT/'assets/entitlements.plist';subprocess.run(['codesign','--force','--deep','--sign','-','--entitlements',str(entitlements),str(app)],check=True)
@@ -102,9 +102,9 @@ def main():
   seven=shutil.which('7z')or r'C:\Program Files\7-Zip\7z.exe';subprocess.run([seven,'x',str(archive),'-o'+str(work),'-y'],check=True,stdout=subprocess.DEVNULL);app=work/'core'
  else:
   result=subprocess.run(['hdiutil','attach','-readonly','-nobrowse','-plist',str(archive)],capture_output=True,check=True);info=plistlib.loads(result.stdout);mount=next(x['mount-point']for x in info['system-entities']if 'mount-point'in x)
-  try:source=next(Path(mount).glob('*.app'));app=work/'Venture.app';shutil.copytree(source,app,symlinks=True)
+  try:source=next(Path(mount).glob('*.app'));app=work/'AltStack Venture.app';shutil.copytree(source,app,symlinks=True)
   finally:subprocess.run(['hdiutil','detach',mount],check=True,stdout=subprocess.DEVNULL)
- resource=brand_package(app,system);args.output.mkdir(parents=True,exist_ok=True);name=f'Venture-{system}-{arch}'
+ resource=brand_package(app,system);args.output.mkdir(parents=True,exist_ok=True);name=f'AltStackVenture-{system}-{arch}'
  if system=='linux':
   dest=work/'Venture';app.rename(dest)
   (dest/'Venture').write_text('#!/bin/sh\nROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)\nexec "$ROOT/firefox" --name Venture --class Venture "$@"\n');(dest/'Venture').chmod(0o755)
