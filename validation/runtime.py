@@ -13,7 +13,7 @@ def receive(sock):
  remaining=int(size[:-1]);data=b''
  while len(data)<remaining:data+=sock.recv(remaining-len(data))
  return json.loads(data)
-with tempfile.TemporaryDirectory(prefix='venture-runtime-') as profile:
+with tempfile.TemporaryDirectory(prefix='venture-runtime-',ignore_cleanup_errors=True) as profile:
  process=subprocess.Popen([str(exe),'--headless','--no-remote','--remote-allow-system-access','--marionette','--profile',profile,'about:blank'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
  try:
   sock=None
@@ -49,7 +49,9 @@ with tempfile.TemporaryDirectory(prefix='venture-runtime-') as profile:
   except Exception:pass
   sock.close()
  finally:
-  if process.poll() is None:process.terminate()
   try:process.wait(timeout=15)
-  except subprocess.TimeoutExpired:process.kill();process.wait()
+  except subprocess.TimeoutExpired:
+   process.terminate()
+   try:process.wait(timeout=10)
+   except subprocess.TimeoutExpired:process.kill();process.wait()
 

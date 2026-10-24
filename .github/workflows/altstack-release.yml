@@ -9,6 +9,7 @@ name: Publish AltStack Venture for six platforms
     - assets/**
     - packaging/**
     - scripts/**
+    - validation/**
     - start/**
     - build.py
     - requirements*.txt
