@@ -14,7 +14,7 @@ def receive(sock):
  while len(data)<remaining:data+=sock.recv(remaining-len(data))
  return json.loads(data)
 with tempfile.TemporaryDirectory(prefix='venture-runtime-') as profile:
- process=subprocess.Popen([str(exe),'--headless','--no-remote','--allow-system-access','--marionette','--profile',profile,'about:blank'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+ process=subprocess.Popen([str(exe),'--headless','--no-remote','--remote-allow-system-access','--marionette','--profile',profile,'about:blank'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
  try:
   sock=None
   for _ in range(120):
@@ -50,3 +50,4 @@ with tempfile.TemporaryDirectory(prefix='venture-runtime-') as profile:
   if process.poll() is None:process.terminate()
   try:process.wait(timeout=15)
   except subprocess.TimeoutExpired:process.kill();process.wait()
+
