@@ -59,6 +59,11 @@ def brand_package(app,system):
  css='chrome/browser/skin/classic/browser/browser.css'
  if css not in entries:raise RuntimeError('Upstream browser stylesheet moved.')
  entries[css]+=BROWSER_CSS.encode()
+ policy_module='modules/policies/Policies.sys.mjs'
+ policy_source=entries[policy_module]
+ allowed=b'const allowedPrefixes = ['
+ if allowed not in policy_source:raise RuntimeError('Upstream UI preference policy changed.')
+ entries[policy_module]=policy_source.replace(allowed,allowed+b'"zen.welcome-screen.seen", "zen.urlbar.replace-newtab", "zen.theme.gradient", "zen.view.compact.hide-toolbar",',1)
  schema='modules/policies/policies-schema.json'
  if schema not in entries:raise RuntimeError('Zen policy schema moved.')
  policy=json.loads(entries[schema]);policy['properties']['SearchEngines']['enterprise_only']=False;entries[schema]=json.dumps(policy).encode();write_jar(jar,entries)
