@@ -35,10 +35,11 @@ with tempfile.TemporaryDirectory(prefix='venture-runtime-') as profile:
   result=command('WebDriver:ExecuteAsyncScript',{'script':'''const done=arguments[arguments.length-1];(async()=>{const {SearchService}=ChromeUtils.importESModule("moz-src:///toolkit/components/search/SearchService.sys.mjs");await SearchService.init();for(let i=0;i<40&&SearchService.defaultEngine.name!=='AltStack Search';i++)await new Promise(r=>setTimeout(r,250));const engine=SearchService.defaultEngine;done({engine:engine.name,privateEngine:SearchService.defaultPrivateEngine.name,url:engine.getSubmission('runtime-check').uri.spec,homepage:Services.prefs.getStringPref('browser.startup.homepage'),policies:Services.policies.getActivePolicies()});})().catch(e=>done({error:String(e)}));''','args':[],'newSandbox':True,'sandbox':'default','scriptTimeout':30000})
   value=result.get('value',result);assert value.get('engine')=='AltStack Search',value;assert value.get('privateEngine')=='AltStack Search',value;assert value.get('url')=='https://www.amerika.social/search?q=runtime-check',value;assert value.get('homepage')=='https://www.amerika.social/',value
   print(json.dumps({'defaultSearch':value['engine'],'searchURL':value['url'],'homepage':value['homepage']}))
-  command('Marionette:SetContext',{'value':'content'});command('WebDriver:Navigate',{'url':'about:newtab'})
+  command('WebDriver:ExecuteScript',{'script':"Services.wm.getMostRecentWindow('navigator:browser').BrowserCommands.openTab();return true;",'args':[],'newSandbox':True,'sandbox':'default'})
   current=''
   for _ in range(60):
-   result=command('WebDriver:GetCurrentURL');current=result.get('value',result) if isinstance(result,dict) else result
+   result=command('WebDriver:ExecuteScript',{'script':"return Services.wm.getMostRecentWindow('navigator:browser').gBrowser.selectedBrowser.currentURI.spec;",'args':[],'newSandbox':True,'sandbox':'default'})
+   current=result.get('value',result) if isinstance(result,dict) else result
    if current.startswith('https://www.amerika.social/'):break
    time.sleep(.5)
   assert current.startswith('https://www.amerika.social/'),('New tab did not open AltStack',current)
