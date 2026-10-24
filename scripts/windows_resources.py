@@ -7,7 +7,7 @@ def block(key,value=b'',children=b'',text=False):
  data=align(data)+children
  return struct.pack('<H',len(data))+data[2:]
 def version_resource():
- values={'CompanyName':'Cherry Blossom LLC','FileDescription':'Amerika Venture','FileVersion':'158.0.1','InternalName':'AmerikaVenture','LegalCopyright':'Cherry Blossom LLC; includes Mozilla software under MPL 2.0','OriginalFilename':'firefox.exe','ProductName':'Amerika Venture','ProductVersion':'158.0.1'}
+ values={'CompanyName':'AltStack LLC','FileDescription':'AltStack Venture','FileVersion':'158.0.1','InternalName':'AltStackVenture','LegalCopyright':'AltStack LLC; includes Mozilla software under MPL 2.0','OriginalFilename':'firefox.exe','ProductName':'AltStack Venture','ProductVersion':'158.0.1'}
  strings=b''.join(align(block(k,(v+'\0').encode('utf-16le'),text=True))for k,v in values.items())
  table=block('StringFileInfo',children=block('040904B0',children=strings,text=True),text=True)
  translation=block('VarFileInfo',children=block('Translation',struct.pack('<HH',0x409,1200)))

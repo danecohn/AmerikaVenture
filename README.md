@@ -1,6 +1,9 @@
-# Venture
+# AltStack Venture
 
-An Amerika LLC browser based on stable Firefox 158.0.1. Venture pairs a charcoal-and-crimson browser interface with a custom Amerika start page, its own compass emblem, and shortcuts to Amerika Social and Makk Office.
+**AltStack LLC · An alternative stack for everyone.**
+
+
+An AltStack LLC browser based on stable Firefox 158.0.1. Venture pairs a charcoal-and-crimson browser interface with a custom Amerika start page, its own compass emblem, and shortcuts to Amerika Social and AltOffice.
 
 ## Builds and source
 
@@ -24,4 +27,4 @@ Safe Browsing, site isolation, the content sandbox, TLS validation and ordinary 
 
 ## Licensing
 
-Modified browser resources and new code: MPL-2.0 (`LICENSE`). Bundled Firefox components retain their original licenses and notices. Firefox is a trademark of the Mozilla Foundation; Venture is a separately branded distribution by Amerika LLC, with no Mozilla endorsement claimed. Source: https://github.com/mozilla-firefox/firefox and the exact source archive in `upstream.json`.
+Modified browser resources and new code: MPL-2.0 (`LICENSE`). Bundled Firefox components retain their original licenses and notices. Firefox is a trademark of the Mozilla Foundation; Venture is a separately branded distribution by AltStack LLC, with no Mozilla endorsement claimed. Source: https://github.com/mozilla-firefox/firefox and the exact source archive in `upstream.json`.

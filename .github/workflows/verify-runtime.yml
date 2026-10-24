@@ -1,0 +1,54 @@
+name: Verify published Zen Venture runtime
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  runtime:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: windows-x64
+            runner: windows-2025
+            ext: zip
+          - target: windows-arm64
+            runner: windows-11-arm
+            ext: zip
+          - target: macos-x64
+            runner: macos-15-intel
+            ext: dmg
+          - target: macos-arm64
+            runner: macos-15
+            ext: dmg
+          - target: linux-x64
+            runner: ubuntu-24.04
+            ext: tar.gz
+          - target: linux-arm64
+            runner: ubuntu-24.04-arm
+            ext: tar.gz
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Download and verify the published browser
+        shell: bash
+        run: |
+          FILE=AltStackVenture-${{ matrix.target }}.${{ matrix.ext }}
+          curl -fL --retry 3 "https://github.com/danecohn/AmerikaVenture/releases/download/altstack-venture-zen-v1.23.4b-2/$FILE" -o "$FILE"
+          curl -fL --retry 3 "https://github.com/danecohn/AmerikaVenture/releases/download/altstack-venture-zen-v1.23.4b-2/$FILE.sha256" -o "$FILE.sha256"
+          python -c 'import hashlib,pathlib,sys; p=pathlib.Path(sys.argv[1]); assert hashlib.sha256(p.read_bytes()).hexdigest()==pathlib.Path(sys.argv[1]+".sha256").read_text().split()[0]' "$FILE"
+          mkdir verify
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            python -m zipfile -e "$FILE" verify
+          elif [ "$RUNNER_OS" = "macOS" ]; then
+            hdiutil attach "$FILE" -nobrowse -mountpoint "$PWD/verify"
+          else
+            tar -xzf "$FILE" -C verify
+          fi
+      - name: Verify search, private search, homepage and new-tab behavior
+        run: python validation/runtime.py verify
+
