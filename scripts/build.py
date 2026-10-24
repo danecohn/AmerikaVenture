@@ -52,7 +52,7 @@ def brand_package(app,system):
   elif base=='aboutDialog.css':entries[name]+=b'\n#aboutDialogContainer{background:#141417!important;color:#f7f7fa!important}#bottomBox{background:#0e0e10!important}\n'
  module='modules/AboutNewTab.sys.mjs'
  if b'const ABOUT_URL = "about:newtab";' not in entries.get(module,b''):raise RuntimeError('Upstream new-tab module changed.')
- entries[module]=entries[module].replace(b'const ABOUT_URL = "about:newtab";',b'const ABOUT_URL = "resource://venture/index.html";')
+ entries[module]=entries[module].replace(b'const ABOUT_URL = "about:newtab";',('const ABOUT_URL = '+json.dumps(META['platform_url']+'/')+';').encode())
  entries['chrome.manifest']+=b'\nresource venture venture/ contentaccessible=yes\n'
  for path in (ROOT/'start').iterdir():
   if path.is_file():entries['venture/'+path.name]=path.read_bytes()
@@ -72,7 +72,7 @@ def brand_package(app,system):
  policies={'policies':{'Homepage':{'URL':'resource://venture/index.html','Locked':False,'StartPage':'homepage'},'DisableTelemetry':True,'DisableFirefoxStudies':True,'DisableAppUpdate':True,'DontCheckDefaultBrowser':True,'DisplayBookmarksToolbar':'always','Preferences':{'browser.startup.homepage_override.mstone':{'Value':'ignore','Status':'default'},'browser.aboutwelcome.enabled':{'Value':False,'Status':'default'},'extensions.activeThemeID':{'Value':'default-theme@mozilla.org','Status':'default'},'app.releaseNotesURL':{'Value':'https://github.com/danecohn/AmerikaVenture/releases','Status':'default'},'browser.startup.homepage_override.buildID':{'Value':'ignore','Status':'default'}}}}
  policies['policies']['Homepage']={'URL':META['platform_url']+'/', 'Locked':False,'StartPage':'homepage'}
  policies['policies']['SearchEngines']={'Add':[{'Name':'AltStack Search','URLTemplate':META['search_url']+'?q={searchTerms}','Method':'GET','IconURL':META['platform_url']+'/logo.svg','Alias':'@altstack','Description':'AltStack Search - private web metasearch'}],'Default':'AltStack Search','DefaultPrivate':'AltStack Search','PreventInstalls':False}
- policies['policies']['Preferences'].update({'zen.welcome-screen.seen':{'Value':True,'Status':'default'},'zen.urlbar.replace-newtab':{'Value':False,'Status':'default'},'zen.theme.gradient':{'Value':False,'Status':'default'},'zen.view.compact.hide-toolbar':{'Value':False,'Status':'default'},'extensions.activeThemeID':{'Value':'firefox-compact-light@mozilla.org','Status':'default'}})
+ policies['policies']['Preferences'].update({'zen.welcome-screen.seen':{'Value':True,'Status':'default'},'zen.urlbar.replace-newtab':{'Value':False,'Status':'locked'},'zen.theme.gradient':{'Value':False,'Status':'default'},'zen.view.compact.hide-toolbar':{'Value':False,'Status':'default'},'extensions.activeThemeID':{'Value':'firefox-compact-light@mozilla.org','Status':'default'}})
  (distribution/'policies.json').write_text(json.dumps(policies,indent=2))
  (resource/'ALTSTACK-SOURCE.json').write_text(json.dumps({**META,'product':'Venture','method':'AltStack chrome resources over the pinned Zen Browser engine; Zen vertical tabs and workspaces retained','modifications':'https://github.com/danecohn/AmerikaVenture','updates':'Manual: download and install a new Venture release. Mozilla automatic app updates are disabled to preserve this distribution.'},indent=2))
  shutil.copy2(ROOT/'LICENSE',resource/'ALTSTACK-LICENSE.txt');shutil.copy2(ROOT/'README.md',resource/'ALTSTACK-README.md')
@@ -126,3 +126,4 @@ def main():
   if p.suffix!='.sha256':p.with_name(p.name+'.sha256').write_text(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n')
  print('Built',name,flush=True)
 if __name__=='__main__':main()
+

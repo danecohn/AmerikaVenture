@@ -1,8 +1,5 @@
 name: Verify published Zen Venture runtime
 on:
-  push:
-    branches: [altstack/alpine-official-logo-20261023]
-    paths: [validation/**, .github/workflows/verify-runtime.yml]
   workflow_dispatch:
 permissions:
   contents: read
@@ -41,8 +38,8 @@ jobs:
         shell: bash
         run: |
           FILE=AltStackVenture-${{ matrix.target }}.${{ matrix.ext }}
-          curl -fL --retry 3 "https://github.com/danecohn/AmerikaVenture/releases/download/altstack-venture-zen-v1.23.4b-1/$FILE" -o "$FILE"
-          curl -fL --retry 3 "https://github.com/danecohn/AmerikaVenture/releases/download/altstack-venture-zen-v1.23.4b-1/$FILE.sha256" -o "$FILE.sha256"
+          curl -fL --retry 3 "https://github.com/danecohn/AmerikaVenture/releases/download/altstack-venture-zen-v1.23.4b-2/$FILE" -o "$FILE"
+          curl -fL --retry 3 "https://github.com/danecohn/AmerikaVenture/releases/download/altstack-venture-zen-v1.23.4b-2/$FILE.sha256" -o "$FILE.sha256"
           python -c 'import hashlib,pathlib,sys; p=pathlib.Path(sys.argv[1]); assert hashlib.sha256(p.read_bytes()).hexdigest()==pathlib.Path(sys.argv[1]+".sha256").read_text().split()[0]' "$FILE"
           mkdir verify
           if [ "$RUNNER_OS" = "Windows" ]; then
@@ -54,3 +51,4 @@ jobs:
           fi
       - name: Verify search, private search, homepage and new-tab behavior
         run: python validation/runtime.py verify
+

@@ -60,6 +60,8 @@ jobs:
       run: python scripts/build.py --target ${{ matrix.target }}
     - name: Launch browser on matching CPU
       run: python scripts/smoke.py --target ${{ matrix.target }}
+    - name: Verify actual default search and new-tab destination
+      run: python validation/runtime.py build/${{ matrix.target }}
     - uses: actions/upload-artifact@v7
       with:
         name: Venture-${{ matrix.target }}
@@ -83,10 +85,11 @@ jobs:
     - name: Publish all six packages together
       env:
         GH_TOKEN: ${{ github.token }}
-        TAG: altstack-venture-zen-v1.23.4b-1
+        TAG: altstack-venture-zen-v1.23.4b-2
       run: 'test "$(find release -maxdepth 1 -type f -name ''AltStackVenture-*'' ! -name ''*.sha256'' | wc -l)" -eq 6
 
         gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --target "$GITHUB_SHA" --title "AltStack Venture"
         --notes-file release-notes.md --prerelease
 
         gh release upload "$TAG" release/AltStackVenture-* --clobber'
+
