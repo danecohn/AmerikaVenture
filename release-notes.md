@@ -1,7 +1,7 @@
-AltStack Venture 158.0.1 � Early access
+AltStack Venture - Zen edition 1.23.4b
 
-AltStack LLC browser using the stable Firefox 158.0.1 engine, official AltStack logo, silver browser chrome, and an AltStack start page.
+Rebuilt from Zen Browser with AltStack branding and silver Alpine chrome. Zen vertical tabs, workspaces, split views and compact navigation are preserved. AltStack Search is the default search engine. Opening the browser or a new tab opens the AltStack desktop hub.
 
-Six downloads: Windows x64/ARM64 portable ZIPs, macOS Intel/Apple Silicon DMGs, and Linux x64/ARM64 TAR.GZ archives with a per-user installer. The macOS upstream engine is universal and runs natively on each architecture. Each package has a SHA-256 sidecar.
+Six packages: Windows x64/ARM64, macOS Intel/Apple Silicon, Linux x64/ARM64. Every package includes SHA-256 verification and exact upstream source provenance. macOS contains the universal Zen engine and is ad-hoc signed, not notarized. Windows builds are unsigned. Browser updates are manual; install new Venture releases promptly.
 
-Unsigned development distributions. macOS is ad-hoc signed, not notarized. Automatic Mozilla app updates are disabled to preserve this distribution; install new Venture releases promptly. Upstream legal notices and MPL source provenance are preserved in each package.
+Based on Zen Browser 1.23.4b (upstream labels this release beta) and Gecko 158.0.1. This is the production AltStack distribution; upstream maturity is not relabeled. MPL-2.0 and upstream copyright notices remain available. Zen and Mozilla are independent upstream projects and do not endorse AltStack.
