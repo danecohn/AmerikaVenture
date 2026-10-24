@@ -42,6 +42,7 @@ with tempfile.TemporaryDirectory(prefix='venture-runtime-') as profile:
    current=result.get('value',result) if isinstance(result,dict) else result
    if current.startswith('https://www.amerika.social/'):break
    time.sleep(.5)
+  diagnostics=command('WebDriver:ExecuteScript',{'script':"const w=Services.wm.getMostRecentWindow('navigator:browser');return {configured:w.BROWSER_NEW_TAB_URL,replace:Services.prefs.getBoolPref('zen.urlbar.replace-newtab'),tabs:Array.from(w.gBrowser.tabs,t=>({url:t.linkedBrowser.currentURI.spec,selected:t.selected,empty:t.hasAttribute('zen-empty-tab')}))};",'args':[],'newSandbox':True,'sandbox':'default'});print(json.dumps(diagnostics))
   assert current.startswith('https://www.amerika.social/'),('New tab did not open AltStack',current)
   print('New tab opens the AltStack desktop:',current)
   try:command('Marionette:Quit',{'flags':['eAttemptQuit']})
