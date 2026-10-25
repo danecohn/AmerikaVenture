@@ -9,8 +9,8 @@ BRAND_FTL='''-brand-shorter-name = Venture
 -brand-shortcut-name = Venture
 -brand-full-name = Venture
 -brand-product-name = Venture
--vendor-short-name = Cherry Blossom LLC
-trademarkInfo = Venture is an Cherry Blossom LLC browser based on Mozilla Firefox. Firefox is a trademark of the Mozilla Foundation.
+-vendor-short-name = Artemis Softworks LLC
+trademarkInfo = Venture is an Artemis Softworks LLC browser based on Mozilla Firefox. Firefox is a trademark of the Mozilla Foundation.
 '''
 BROWSER_CSS=(ROOT/'assets/venture-classic.css').read_text()
 
@@ -57,12 +57,12 @@ def brand_package(app,system):
  if css not in entries:raise RuntimeError('Upstream browser stylesheet moved.')
  entries[css]+=BROWSER_CSS.encode();write_jar(jar,entries)
  ini=resource/'application.ini';config=configparser.ConfigParser(interpolation=None);config.optionxform=str;config.read(ini)
- config['App'].update(Name='Venture',Vendor='Cherry Blossom LLC',RemotingName='amerika-venture',Profile='Venture')
+ config['App'].update(Name='Venture',Vendor='Artemis Softworks LLC',RemotingName='amerika-venture',Profile='Venture')
  with ini.open('w')as f:config.write(f,space_around_delimiters=False)
  icons=resource/'browser/chrome/icons/default';icons.mkdir(parents=True,exist_ok=True)
  for size in [16,32,48,64,128]:shutil.copy2(ROOT/f'assets/icon{size}.png',icons/f'default{size}.png')
  distribution=resource/'distribution';distribution.mkdir(exist_ok=True)
- (distribution/'distribution.ini').write_text('[Global]\nid=com.amerika.venture\nversion='+META['version']+'\nabout=Venture by Cherry Blossom LLC\n[Preferences]\napp.distributor="Cherry Blossom LLC"\napp.distributor.channel="venture"\n')
+ (distribution/'distribution.ini').write_text('[Global]\nid=com.amerika.venture\nversion='+META['version']+'\nabout=Venture by Artemis Softworks LLC\n[Preferences]\napp.distributor="Artemis Softworks LLC"\napp.distributor.channel="venture"\n')
  policies={'policies':{'Homepage':{'URL':'resource://venture/index.html','Locked':False,'StartPage':'homepage'},'DisableTelemetry':True,'DisableFirefoxStudies':True,'DisableAppUpdate':True,'DontCheckDefaultBrowser':True,'DisplayBookmarksToolbar':'always','Preferences':{'browser.startup.homepage_override.mstone':{'Value':'ignore','Status':'default'},'browser.aboutwelcome.enabled':{'Value':False,'Status':'default'},'extensions.activeThemeID':{'Value':'default-theme@mozilla.org','Status':'default'},'app.releaseNotesURL':{'Value':'https://github.com/danecohn/AmerikaVenture/releases','Status':'default'},'browser.startup.homepage_override.buildID':{'Value':'ignore','Status':'default'}}}}
  (distribution/'policies.json').write_text(json.dumps(policies,indent=2))
  (resource/'AMERIKA-SOURCE.json').write_text(json.dumps({**META,'product':'Venture','method':'Rebuilt chrome resources over unmodified stable Gecko binaries','modifications':'https://github.com/danecohn/AmerikaVenture','updates':'Manual: download and install a new Venture release. Mozilla automatic app updates are disabled to preserve this distribution.'},indent=2))

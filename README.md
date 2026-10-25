@@ -1,6 +1,15 @@
 # Venture
 
-An Amerika LLC browser based on stable Firefox 158.0.1. Venture pairs a charcoal-and-crimson browser interface with a custom Amerika start page, its own compass emblem, and shortcuts to Amerika Social and Makk Office.
+<!-- artemis-publisher:start -->
+<img src="brand/artemis/artemis-wordmark.svg" alt="Artemis Softworks LLC" width="340">
+
+**A product of Artemis Softworks LLC.** Founded by **Demetria Althea Cohn**.
+
+Companion software for macOS, thoughtfully available for Windows and Linux. See the [Artemis identity and design system](brand/artemis/BRAND.md). Platform availability varies by product and release.
+<!-- artemis-publisher:end -->
+
+
+An Artemis Softworks LLC browser based on stable Firefox 158.0.1. Venture pairs a charcoal-and-crimson browser interface with a custom Amerika start page, its own compass emblem, and shortcuts to Amerika Social and Makk Office.
 
 ## Builds and source
 
@@ -24,4 +33,4 @@ Safe Browsing, site isolation, the content sandbox, TLS validation and ordinary 
 
 ## Licensing
 
-Modified browser resources and new code: MPL-2.0 (`LICENSE`). Bundled Firefox components retain their original licenses and notices. Firefox is a trademark of the Mozilla Foundation; Venture is a separately branded distribution by Amerika LLC, with no Mozilla endorsement claimed. Source: https://github.com/mozilla-firefox/firefox and the exact source archive in `upstream.json`.
+Modified browser resources and new code: MPL-2.0 (`LICENSE`). Bundled Firefox components retain their original licenses and notices. Firefox is a trademark of the Mozilla Foundation; Venture is a separately branded distribution by Artemis Softworks LLC, with no Mozilla endorsement claimed. Source: https://github.com/mozilla-firefox/firefox and the exact source archive in `upstream.json`.
