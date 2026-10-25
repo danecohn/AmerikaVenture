@@ -1,4 +1,4 @@
-# AltStack LLC official identity
+# Artemis Softworks LLC official identity
 
 The supplied AltStack logo is the approved master artwork. altstack-logo-original.png is an exact copy of the owner-supplied PNG. Preserve its pink background, black outlines, white arrow and AS lettering. No monochrome reinterpretation or replacement symbol is approved. SVG files embed the original raster losslessly; they are not vector tracings. PNG/ICO/ICNS derivatives scale the master proportionally without cropping.
 

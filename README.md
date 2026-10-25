@@ -1,9 +1,9 @@
 # AltStack Venture
 
-**AltStack LLC · An alternative stack for everyone.**
+**Artemis Softworks LLC · An alternative stack for everyone.**
 
 
-An AltStack LLC browser based on stable Firefox 158.0.1. Venture pairs a charcoal-and-crimson browser interface with a custom Amerika start page, its own compass emblem, and shortcuts to Amerika Social and AltOffice.
+An Artemis Softworks LLC browser built on the pinned Zen Browser 1.23.4b distribution and its Firefox engine. Venture pairs the Artemis Cloud interface with a sculpted compass icon, Zen vertical tabs and workspaces, and the AltStack desktop.
 
 ## Builds and source
 
@@ -27,4 +27,4 @@ Safe Browsing, site isolation, the content sandbox, TLS validation and ordinary 
 
 ## Licensing
 
-Modified browser resources and new code: MPL-2.0 (`LICENSE`). Bundled Firefox components retain their original licenses and notices. Firefox is a trademark of the Mozilla Foundation; Venture is a separately branded distribution by AltStack LLC, with no Mozilla endorsement claimed. Source: https://github.com/mozilla-firefox/firefox and the exact source archive in `upstream.json`.
+Modified browser resources and new code: MPL-2.0 (`LICENSE`). Bundled Firefox components retain their original licenses and notices. Firefox is a trademark of the Mozilla Foundation; Venture is a separately branded distribution by Artemis Softworks LLC, with no Mozilla endorsement claimed. Upstream source: https://github.com/zen-browser/desktop and the pinned source archive in `upstream.json`; Mozilla components retain their own source and licenses.

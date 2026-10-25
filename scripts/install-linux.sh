@@ -11,7 +11,7 @@ cat > "$HOME/.local/share/applications/altstack-venture.desktop" <<EOF
 [Desktop Entry]
 Type=Application
 Name=Venture
-Comment=AltStack LLC browser based on Firefox
+Comment=Artemis Softworks LLC browser based on Firefox
 Exec="$TARGET/Venture" %u
 Icon=altstack-venture
 Terminal=false
