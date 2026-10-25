@@ -68,3 +68,6 @@
 #PersonalToolbar { display: flex !important; visibility: visible !important; flex: 0 0 27px !important; height: 27px !important; max-height: none !important; align-self: stretch !important; }
 #PersonalToolbar > #PlacesToolbar { flex: 1 !important; }
 #urlbar-search-splitter { display: none !important; }
+
+/* Artemis Softworks LLC · Moonrise companion chrome */
+:root{--toolbar-bgcolor:#edf0e6!important;--toolbar-color:#273941!important;--lwt-accent-color:#dce5df!important;--lwt-text-color:#273941!important;--toolbar-field-background-color:#fffdf6!important;--toolbar-field-color:#273941!important;--toolbar-field-border-color:#c5cec5!important;--toolbarbutton-icon-fill:#526e7b!important;}
