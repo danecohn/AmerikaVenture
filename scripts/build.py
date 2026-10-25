@@ -9,8 +9,8 @@ BRAND_FTL='''-brand-shorter-name = AltStack Venture
 -brand-shortcut-name = AltStack Venture
 -brand-full-name = AltStack Venture
 -brand-product-name = AltStack Venture
--vendor-short-name = AltStack LLC
-trademarkInfo = AltStack Venture is an AltStack LLC browser based on Zen Browser and Mozilla Firefox. Upstream legal notices are preserved.
+-vendor-short-name = Artemis Softworks LLC
+trademarkInfo = AltStack Venture is an Artemis Softworks LLC browser based on Zen Browser and Mozilla Firefox. Upstream legal notices are preserved.
 '''
 BROWSER_CSS=(ROOT/'assets/venture-classic.css').read_text()
 
@@ -44,12 +44,12 @@ def brand_package(app,system):
   if '/content/branding/' not in name:continue
   base=Path(name).name
   if base.endswith('.svg') and any(x in base for x in ['logo','wordmark']):
-   if 'wordmark' in base:entries[name]=b'<svg xmlns="http://www.w3.org/2000/svg" width="300" height="60"><text x="0" y="43" fill="#f7f7fa" font-family="sans-serif" font-size="35" font-weight="600">AltStack Venture</text></svg>'
+   if 'wordmark' in base:entries[name]=b'<svg xmlns="http://www.w3.org/2000/svg" width="300" height="60"><text x="0" y="43" fill="#1d1d1f" font-family="sans-serif" font-size="35" font-weight="600">AltStack Venture</text></svg>'
    else:entries[name]=mark
   elif base.endswith('.png'):
    m=re.search(r'icon(\d+)',base);size=int(m.group(1)) if m else 256
    entries[name]=(ROOT/f'assets/icon{min(size,512)}.png').read_bytes()
-  elif base=='aboutDialog.css':entries[name]+=b'\n#aboutDialogContainer{background:#141417!important;color:#f7f7fa!important}#bottomBox{background:#0e0e10!important}\n'
+  elif base=='aboutDialog.css':entries[name]+=b'\n#aboutDialogContainer{background:#f5f5f7!important;color:#1d1d1f!important}#bottomBox{background:#eaf2ff!important}\n'
  module='modules/AboutNewTab.sys.mjs'
  if b'const ABOUT_URL = "about:newtab";' not in entries.get(module,b''):raise RuntimeError('Upstream new-tab module changed.')
  entries[module]=entries[module].replace(b'const ABOUT_URL = "about:newtab";',('const ABOUT_URL = '+json.dumps(META['platform_url']+'/')+';').encode())
@@ -68,12 +68,12 @@ def brand_package(app,system):
  if schema not in entries:raise RuntimeError('Zen policy schema moved.')
  policy=json.loads(entries[schema]);policy['properties']['SearchEngines']['enterprise_only']=False;entries[schema]=json.dumps(policy).encode();write_jar(jar,entries)
  ini=resource/'application.ini';config=configparser.ConfigParser(interpolation=None);config.optionxform=str;config.read(ini)
- config['App'].update(Name='AltStack Venture',Vendor='AltStack LLC',RemotingName='altstack-venture',Profile='Venture')
+ config['App'].update(Name='AltStack Venture',Vendor='Artemis Softworks LLC',RemotingName='altstack-venture',Profile='Venture')
  with ini.open('w')as f:config.write(f,space_around_delimiters=False)
  icons=resource/'browser/chrome/icons/default';icons.mkdir(parents=True,exist_ok=True)
  for size in [16,32,48,64,128]:shutil.copy2(ROOT/f'assets/icon{size}.png',icons/f'default{size}.png')
  distribution=resource/'distribution';distribution.mkdir(exist_ok=True)
- (distribution/'distribution.ini').write_text('[Global]\nid=org.altstack.venture\nversion='+META['version']+'\nabout=Venture by AltStack LLC\n[Preferences]\napp.distributor="AltStack LLC"\napp.distributor.channel="venture"\n')
+ (distribution/'distribution.ini').write_text('[Global]\nid=org.altstack.venture\nversion='+META['version']+'\nabout=Venture by Artemis Softworks LLC\n[Preferences]\napp.distributor="Artemis Softworks LLC"\napp.distributor.channel="venture"\n')
  policies={'policies':{'Homepage':{'URL':'resource://venture/index.html','Locked':False,'StartPage':'homepage'},'DisableTelemetry':True,'DisableFirefoxStudies':True,'DisableAppUpdate':True,'DontCheckDefaultBrowser':True,'DisplayBookmarksToolbar':'always','Preferences':{'browser.startup.homepage_override.mstone':{'Value':'ignore','Status':'default'},'browser.aboutwelcome.enabled':{'Value':False,'Status':'default'},'extensions.activeThemeID':{'Value':'default-theme@mozilla.org','Status':'default'},'app.releaseNotesURL':{'Value':'https://github.com/danecohn/AmerikaVenture/releases','Status':'default'},'browser.startup.homepage_override.buildID':{'Value':'ignore','Status':'default'}}}}
  policies['policies']['Homepage']={'URL':META['platform_url']+'/', 'Locked':False,'StartPage':'homepage'}
  policies['policies']['SearchEngines']={'Add':[{'Name':'AltStack Search','URLTemplate':META['search_url']+'?q={searchTerms}','Method':'GET','IconURL':META['platform_url']+'/logo.svg','Alias':'@altstack','Description':'AltStack Search - private web metasearch'}],'Default':'AltStack Search','DefaultPrivate':'AltStack Search','PreventInstalls':False}
