@@ -4,13 +4,13 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 META=json.loads((ROOT/'upstream.json').read_text())
 TARGETS={'linux-x64':('linux-x86_64','firefox-{v}.tar.xz'),'linux-arm64':('linux-aarch64','firefox-{v}.tar.xz'),'windows-x64':('win64','Firefox Setup {v}.exe'),'windows-arm64':('win64-aarch64','Firefox Setup {v}.exe'),'macos-x64':('mac','Firefox {v}.dmg'),'macos-arm64':('mac','Firefox {v}.dmg')}
-BRAND_FTL='''-brand-shorter-name = Venture
--brand-short-name = Venture
--brand-shortcut-name = Venture
--brand-full-name = Venture
--brand-product-name = Venture
--vendor-short-name = Artemis Softworks LLC
-trademarkInfo = Venture is an Artemis Softworks LLC browser based on Mozilla Firefox. Firefox is a trademark of the Mozilla Foundation.
+BRAND_FTL='''-brand-shorter-name = Vigil Venture
+-brand-short-name = Vigil Venture
+-brand-shortcut-name = Vigil Venture
+-brand-full-name = Vigil Venture
+-brand-product-name = Vigil Venture
+-vendor-short-name = VigilTech
+trademarkInfo = Vigil Venture is a VigilTech browser based on Mozilla Firefox. Firefox is a trademark of the Mozilla Foundation.
 '''
 BROWSER_CSS=(ROOT/'assets/venture-classic.css').read_text()
 
@@ -35,48 +35,51 @@ def brand_package(app,system):
  jar=resource/'browser/omni.ja';entries=jar_entries(jar)
  ftl='localization/en-US/branding/brand.ftl';properties='chrome/en-US/locale/branding/brand.properties'
  if ftl not in entries:raise RuntimeError('Upstream branding layout changed; inspect before building.')
- entries[ftl]=BRAND_FTL.encode();entries[properties]=b'brandShorterName=Venture\nbrandShortName=Venture\nbrandFullName=Venture\n'
+ entries[ftl]=BRAND_FTL.encode();entries[properties]=b'brandShorterName=Vigil Venture\nbrandShortName=Vigil Venture\nbrandFullName=Vigil Venture\n'
  mark=(ROOT/'assets/venture.svg').read_bytes()
  for name in list(entries):
   if '/content/branding/' not in name:continue
   base=Path(name).name
   if base.endswith('.svg') and any(x in base for x in ['logo','wordmark']):
-   if 'wordmark' in base:entries[name]=b'<svg xmlns="http://www.w3.org/2000/svg" width="300" height="60"><text x="0" y="43" fill="#f7f7fa" font-family="sans-serif" font-size="35" font-weight="600">Venture</text></svg>'
+   if 'wordmark' in base:entries[name]=b'<svg xmlns="http://www.w3.org/2000/svg" width="300" height="60"><text x="0" y="43" fill="#f7eef2" font-family="sans-serif" font-size="35" font-weight="600">Vigil Venture</text></svg>'
    else:entries[name]=mark
   elif base.endswith('.png'):
    m=re.search(r'icon(\d+)',base);size=int(m.group(1)) if m else 256
    entries[name]=(ROOT/f'assets/icon{min(size,512)}.png').read_bytes()
-  elif base=='aboutDialog.css':entries[name]+=b'\n#aboutDialogContainer{background:#141417!important;color:#f7f7fa!important}#bottomBox{background:#0e0e10!important}\n'
+  elif base=='aboutDialog.css':entries[name]+=b'\n#aboutDialogContainer{background:#1e1422!important;color:#f7eef2!important}#bottomBox{background:#120a14!important}\n'
  module='modules/AboutNewTab.sys.mjs'
  if b'const ABOUT_URL = "about:newtab";' not in entries.get(module,b''):raise RuntimeError('Upstream new-tab module changed.')
  entries[module]=entries[module].replace(b'const ABOUT_URL = "about:newtab";',b'const ABOUT_URL = "resource://venture/index.html";')
  entries['chrome.manifest']+=b'\nresource venture venture/ contentaccessible=yes\n'
  for path in (ROOT/'start').iterdir():
   if path.is_file():entries['venture/'+path.name]=path.read_bytes()
+  elif path.is_dir():
+   for sub in path.rglob('*'):
+    if sub.is_file():entries['venture/'+sub.relative_to(ROOT/'start').as_posix()]=sub.read_bytes()
  css='chrome/browser/skin/classic/browser/browser.css'
  if css not in entries:raise RuntimeError('Upstream browser stylesheet moved.')
  entries[css]+=BROWSER_CSS.encode();write_jar(jar,entries)
  ini=resource/'application.ini';config=configparser.ConfigParser(interpolation=None);config.optionxform=str;config.read(ini)
- config['App'].update(Name='Venture',Vendor='Artemis Softworks LLC',RemotingName='amerika-venture',Profile='Venture')
+ config['App'].update(Name='Venture',Vendor='Artemis Softworks LLC',RemotingName='amerika-venture',Profile='Venture')  # Name, Vendor, Profile and RemotingName stay: they decide where the profile lives
  with ini.open('w')as f:config.write(f,space_around_delimiters=False)
  icons=resource/'browser/chrome/icons/default';icons.mkdir(parents=True,exist_ok=True)
  for size in [16,32,48,64,128]:shutil.copy2(ROOT/f'assets/icon{size}.png',icons/f'default{size}.png')
  distribution=resource/'distribution';distribution.mkdir(exist_ok=True)
- (distribution/'distribution.ini').write_text('[Global]\nid=com.amerika.venture\nversion='+META['version']+'\nabout=Venture by Artemis Softworks LLC\n[Preferences]\napp.distributor="Artemis Softworks LLC"\napp.distributor.channel="venture"\n')
+ (distribution/'distribution.ini').write_text('[Global]\nid=com.amerika.venture\nversion='+META['version']+'\nabout=Vigil Venture by VigilTech\n[Preferences]\napp.distributor="VigilTech"\napp.distributor.channel="venture"\n')
  policies={'policies':{'Homepage':{'URL':'resource://venture/index.html','Locked':False,'StartPage':'homepage'},'DisableTelemetry':True,'DisableFirefoxStudies':True,'DisableAppUpdate':True,'DontCheckDefaultBrowser':True,'DisplayBookmarksToolbar':'always','Preferences':{'browser.startup.homepage_override.mstone':{'Value':'ignore','Status':'default'},'browser.aboutwelcome.enabled':{'Value':False,'Status':'default'},'extensions.activeThemeID':{'Value':'default-theme@mozilla.org','Status':'default'},'app.releaseNotesURL':{'Value':'https://github.com/danecohn/AmerikaVenture/releases','Status':'default'},'browser.startup.homepage_override.buildID':{'Value':'ignore','Status':'default'}}}}
  (distribution/'policies.json').write_text(json.dumps(policies,indent=2))
- (resource/'AMERIKA-SOURCE.json').write_text(json.dumps({**META,'product':'Venture','method':'Rebuilt chrome resources over unmodified stable Gecko binaries','modifications':'https://github.com/danecohn/AmerikaVenture','updates':'Manual: download and install a new Venture release. Mozilla automatic app updates are disabled to preserve this distribution.'},indent=2))
+ (resource/'AMERIKA-SOURCE.json').write_text(json.dumps({**META,'product':'Vigil Venture','method':'Rebuilt chrome resources over unmodified stable Gecko binaries','modifications':'https://github.com/danecohn/AmerikaVenture','updates':'Manual: download and install a new Venture release. Mozilla automatic app updates are disabled to preserve this distribution.'},indent=2))
  shutil.copy2(ROOT/'LICENSE',resource/'AMERIKA-LICENSE.txt');shutil.copy2(ROOT/'README.md',resource/'AMERIKA-README.md')
  if system=='windows':
   from windows_resources import replace_resources
   replace_resources(resource/'firefox.exe',ROOT/'assets/venture.ico')
   for manifest in resource.glob('*.VisualElementsManifest.xml'):
-   text=manifest.read_text();text=re.sub(r'DisplayName="[^"]*"','DisplayName="Venture"',text);manifest.write_text(text)
+   text=manifest.read_text();text=re.sub(r'DisplayName="[^"]*"','DisplayName="Vigil Venture"',text);manifest.write_text(text)
   for f in ['VisualElements_150.png','VisualElements_70.png']:
    p=resource/'browser/VisualElements'/f
    if p.exists():shutil.copy2(ROOT/'assets/icon256.png',p)
  if system=='macos':
-  p=app/'Contents/Info.plist';v=plistlib.loads(p.read_bytes());v.update(CFBundleName='Venture',CFBundleDisplayName='Venture',CFBundleIdentifier='com.amerika.venture',CFBundleIconFile='venture.icns');p.write_bytes(plistlib.dumps(v));shutil.copy2(ROOT/'assets/venture.icns',resource/'venture.icns')
+  p=app/'Contents/Info.plist';v=plistlib.loads(p.read_bytes());v.update(CFBundleName='Vigil Venture',CFBundleDisplayName='Vigil Venture',CFBundleIdentifier='com.amerika.venture',CFBundleIconFile='venture.icns');p.write_bytes(plistlib.dumps(v));shutil.copy2(ROOT/'assets/venture.icns',resource/'venture.icns')
   signature=app/'Contents/_CodeSignature'
   if signature.exists():shutil.rmtree(signature)
   entitlements=ROOT/'assets/entitlements.plist';subprocess.run(['codesign','--force','--deep','--sign','-','--entitlements',str(entitlements),str(app)],check=True)
@@ -112,7 +115,7 @@ def main():
   with tarfile.open(args.output/(name+'.tar.gz'),'w:gz')as f:f.add(dest,arcname='Venture')
  elif system=='windows':
   shutil.copy2(app/'firefox.exe',app/'Venture.exe');app.rename(work/'Venture');shutil.make_archive(str(args.output/name),'zip',work,'Venture')
- else:subprocess.run(['hdiutil','create','-volname','Venture','-srcfolder',str(app),'-ov',str(args.output/(name+'.dmg'))],check=True)
+ else:subprocess.run(['hdiutil','create','-volname','Vigil Venture','-srcfolder',str(app),'-ov',str(args.output/(name+'.dmg'))],check=True)
  for p in args.output.glob(name+'.*'):
   if p.suffix!='.sha256':p.with_name(p.name+'.sha256').write_text(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n')
  print('Built',name,flush=True)

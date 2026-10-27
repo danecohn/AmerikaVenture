@@ -1,0 +1,34 @@
+/* Vigil Venture start page. Maps onto the shared VigilTech tokens (goldengate.css).
+   Every text/background pair is >= 4.5:1 in light and dark, and in hover, active, focus and disabled states. */
+@font-face { font-family: "Vigil Sans"; font-weight: 400; font-display: swap; src: url("fonts/VigilSans-Regular.woff2") format("woff2"); }
+@font-face { font-family: "Vigil Sans"; font-weight: 700; font-display: swap; src: url("fonts/VigilSans-Bold.woff2") format("woff2"); }
+:root { --vt-font: "Vigil Sans", -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif; }
+html { min-height: 100%; }
+body.vt { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background-attachment: fixed; font-family: var(--vt-font); }
+.bar { position: sticky; top: 0; z-index: 2; justify-content: space-between; }
+.brand { display: inline-flex; align-items: center; gap: 10px; color: var(--vt-label) !important; text-decoration: none; font-size: 17px; font-weight: 400; }
+.brand b { font-weight: 700; }
+.brand img { border-radius: 22%; }
+.clock { color: var(--vt-label); font-size: 14px; font-weight: 700; }
+main { flex: 1; width: min(880px, 92vw); margin: 0 auto; padding: 6vh 0 32px; }
+.hero { text-align: center; padding: 36px 24px 28px; margin-bottom: 28px; border-radius: 22px; background: var(--vt-surface); box-shadow: var(--vt-shadow-2), 0 0 0 1px var(--vt-separator); }
+.app-icon { border-radius: 22.37%; box-shadow: var(--vt-shadow-2); }
+.hero h1 { margin: 18px 0 6px; letter-spacing: -.02em; color: var(--vt-label); }
+.hero p { margin: 0; color: var(--vt-label); opacity: 1; font-size: 17px; }
+form { display: flex; gap: 10px; max-width: 620px; margin: 26px auto 0; padding: 8px; border-radius: 18px; background: var(--vt-surface-2); box-shadow: 0 0 0 1px var(--vt-separator); }
+form .vt-field { min-height: 44px; font-size: 16px; border-radius: 12px; flex: 1; min-width: 0; }
+form .vt-field::placeholder { color: var(--vt-label-2); opacity: 1; }
+form .vt-btn.primary { min-height: 44px; padding: 0 22px; font-size: 16px; border-radius: 12px; background: var(--vt-pink-600); color: #fff; }
+form .vt-btn.primary:hover, form .vt-btn.primary:focus-visible { background: var(--vt-pink-700); color: #fff; }
+form .vt-btn.primary:active { background: var(--vt-pink-800); color: #fff; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 18px; }
+.tile { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 26px 14px 22px; border-radius: 18px; text-decoration: none; text-align: center; color: var(--vt-label); background: var(--vt-surface); box-shadow: var(--vt-shadow-1), 0 0 0 1px var(--vt-separator); transition: transform .15s ease, box-shadow .15s ease; }
+.tile:hover { transform: translateY(-3px); color: var(--vt-label); box-shadow: var(--vt-shadow-2), 0 0 0 2px var(--vt-tint-strong); }
+.tile:active { transform: translateY(0); background: var(--vt-surface-2); color: var(--vt-label); }
+.tile b { font-size: 16px; color: var(--vt-label); margin-top: 10px; }
+.tile small { font-size: 13px; color: var(--vt-label-2); }
+.glyph { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 22.37%; font-size: 26px; font-weight: 700; color: #fff; background: var(--vt-pink-600) linear-gradient(var(--vt-pink-600), var(--vt-pink-800)); box-shadow: inset 0 1px 0 rgba(255, 190, 215, .5), var(--vt-shadow-1); }
+footer { margin: 0; padding: 14px 24px; text-align: center; font-size: 13px; color: var(--vt-label); background: var(--vt-surface); border-top: 1px solid var(--vt-separator); }
+footer a { color: var(--vt-tint-strong); }
+@media (max-width: 520px) { form { flex-direction: column; } .clock { display: none; } }
+form .vt-btn.primary:disabled, form .vt-btn.primary[disabled] { opacity: 1; background: var(--vt-surface); color: var(--vt-label); box-shadow: 0 0 0 1px var(--vt-separator); }

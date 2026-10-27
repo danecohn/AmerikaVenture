@@ -1,4 +1,4 @@
-name: Build and publish Venture downloads
+name: Build and publish Vigil Venture downloads
 on:
   workflow_dispatch:
 permissions:
@@ -23,7 +23,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
-        run: gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --target "$GITHUB_SHA" --title "Venture · $TAG" --notes-file release-notes.md --prerelease
+        run: gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --target "$GITHUB_SHA" --title "Vigil Venture · $TAG" --notes-file release-notes.md --prerelease
   package:
     needs: prepare
     strategy:

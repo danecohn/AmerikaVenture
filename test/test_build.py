@@ -9,7 +9,7 @@ class Packaging(unittest.TestCase):
   with tempfile.TemporaryDirectory()as d:
    app=Path(d);(app/'browser').mkdir();(app/'application.ini').write_text('[App]\nName=Firefox\nVendor=Mozilla\nVersion=158.0.1\n')
    entries={'localization/en-US/branding/brand.ftl':b'original','modules/AboutNewTab.sys.mjs':b'const ABOUT_URL = "about:newtab";','chrome.manifest':b'manifest chrome/chrome.manifest\n','chrome/browser/skin/classic/browser/browser.css':b'/* upstream */'}
-   build.write_jar(app/'browser/omni.ja',entries);build.brand_package(app,'linux');actual=build.jar_entries(app/'browser/omni.ja');self.assertIn(b'Venture',actual['localization/en-US/branding/brand.ftl']);self.assertIn(b'resource://venture/index.html',actual['modules/AboutNewTab.sys.mjs']);self.assertIn(b'/* upstream */',actual['chrome/browser/skin/classic/browser/browser.css']);self.assertIn('venture/index.html',actual)
+   build.write_jar(app/'browser/omni.ja',entries);build.brand_package(app,'linux');actual=build.jar_entries(app/'browser/omni.ja');self.assertIn(b'Vigil Venture',actual['localization/en-US/branding/brand.ftl']);self.assertIn(b'resource://venture/index.html',actual['modules/AboutNewTab.sys.mjs']);self.assertIn(b'/* upstream */',actual['chrome/browser/skin/classic/browser/browser.css']);self.assertIn('venture/index.html',actual);self.assertIn('venture/fonts/VigilSans-Regular.woff2',actual)
    import json
    p=json.loads((app/'distribution/policies.json').read_text())['policies'];self.assertNotIn('DisableSafeBrowsing',p);self.assertNotIn('DisableSecurity',p)
    c=configparser.ConfigParser();c.read(app/'application.ini');self.assertEqual(c['App']['Name'],'Venture')

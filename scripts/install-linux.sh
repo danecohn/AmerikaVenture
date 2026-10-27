@@ -10,8 +10,8 @@ cp "$TARGET/browser/chrome/icons/default/default128.png" "$HOME/.local/share/ico
 cat > "$HOME/.local/share/applications/amerika-venture.desktop" <<EOF
 [Desktop Entry]
 Type=Application
-Name=Venture
-Comment=Artemis Softworks LLC browser based on Firefox
+Name=Vigil Venture
+Comment=VigilTech browser based on Firefox
 Exec="$TARGET/Venture" %u
 Icon=amerika-venture
 Terminal=false
@@ -20,4 +20,4 @@ MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;
 StartupNotify=true
 StartupWMClass=Venture
 EOF
-printf '%s\n' 'Venture installed. Open it from your application launcher.'
+printf '%s\n' 'Vigil Venture installed. Open it from your application launcher.'
