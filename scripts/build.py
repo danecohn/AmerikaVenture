@@ -4,13 +4,13 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 META=json.loads((ROOT/'upstream.json').read_text())
 TARGETS={'linux-x64':('linux-x86_64','firefox-{v}.tar.xz'),'linux-arm64':('linux-aarch64','firefox-{v}.tar.xz'),'windows-x64':('win64','Firefox Setup {v}.exe'),'windows-arm64':('win64-aarch64','Firefox Setup {v}.exe'),'macos-x64':('mac','Firefox {v}.dmg'),'macos-arm64':('mac','Firefox {v}.dmg')}
-BRAND_FTL='''-brand-shorter-name = AltStack Venture
--brand-short-name = AltStack Venture
--brand-shortcut-name = AltStack Venture
--brand-full-name = AltStack Venture
--brand-product-name = AltStack Venture
--vendor-short-name = Artemis Softworks LLC
-trademarkInfo = AltStack Venture is an Artemis Softworks LLC browser based on Zen Browser and Mozilla Firefox. Upstream legal notices are preserved.
+BRAND_FTL='''-brand-shorter-name = Vigil Venture
+-brand-short-name = Vigil Venture
+-brand-shortcut-name = Vigil Venture
+-brand-full-name = Vigil Venture
+-brand-product-name = Vigil Venture
+-vendor-short-name = VigilTech
+trademarkInfo = Vigil Venture is a VigilTech browser based on Zen Browser and Mozilla Firefox. Upstream legal notices are preserved.
 '''
 BROWSER_CSS=(ROOT/'assets/venture-classic.css').read_text()
 
@@ -37,14 +37,14 @@ def brand_package(app,system):
  if ftl not in entries:raise RuntimeError('Upstream branding layout changed; inspect before building.')
  for key in list(entries):
   if key.endswith('/branding/brand.ftl'):entries[key]=BRAND_FTL.encode()
-  elif key.endswith('.ftl') and '/browser/zen-' in key:entries[key]=entries[key].replace(b'Zen Browser',b'AltStack Venture').replace(b'Zen',b'Venture')
+  elif key.endswith('.ftl') and '/browser/zen-' in key:entries[key]=entries[key].replace(b'Zen Browser',b'Vigil Venture').replace(b'Zen',b'Venture')
  entries[properties]=b'brandShorterName=Venture\nbrandShortName=Venture\nbrandFullName=Venture\n'
  mark=(ROOT/'assets/venture.svg').read_bytes()
  for name in list(entries):
   if '/content/branding/' not in name:continue
   base=Path(name).name
   if base.endswith('.svg') and any(x in base for x in ['logo','wordmark']):
-   if 'wordmark' in base:entries[name]=b'<svg xmlns="http://www.w3.org/2000/svg" width="300" height="60"><text x="0" y="43" fill="#1d1d1f" font-family="sans-serif" font-size="35" font-weight="600">AltStack Venture</text></svg>'
+   if 'wordmark' in base:entries[name]=b'<svg xmlns="http://www.w3.org/2000/svg" width="300" height="60"><text x="0" y="43" fill="#1d1d1f" font-family="sans-serif" font-size="35" font-weight="600">Vigil Venture</text></svg>'
    else:entries[name]=mark
   elif base.endswith('.png'):
    m=re.search(r'icon(\d+)',base);size=int(m.group(1)) if m else 256
@@ -56,6 +56,9 @@ def brand_package(app,system):
  entries['chrome.manifest']+=b'\nresource venture venture/ contentaccessible=yes\n'
  for path in (ROOT/'start').iterdir():
   if path.is_file():entries['venture/'+path.name]=path.read_bytes()
+  elif path.is_dir():
+   for sub in path.rglob('*'):
+    if sub.is_file():entries['venture/'+sub.relative_to(ROOT/'start').as_posix()]=sub.read_bytes()
  css='chrome/browser/skin/classic/browser/browser.css'
  if css not in entries:raise RuntimeError('Upstream browser stylesheet moved.')
  entries[css]+=BROWSER_CSS.encode()
@@ -68,16 +71,17 @@ def brand_package(app,system):
  if schema not in entries:raise RuntimeError('Zen policy schema moved.')
  policy=json.loads(entries[schema]);policy['properties']['SearchEngines']['enterprise_only']=False;entries[schema]=json.dumps(policy).encode();write_jar(jar,entries)
  ini=resource/'application.ini';config=configparser.ConfigParser(interpolation=None);config.optionxform=str;config.read(ini)
- config['App'].update(Name='AltStack Venture',Vendor='Artemis Softworks LLC',RemotingName='altstack-venture',Profile='Venture')
+ config['App'].update(Name='AltStack Venture',Vendor='Artemis Softworks LLC',RemotingName='altstack-venture',Profile='Venture')  # Existing profile identity is deliberately retained.
  with ini.open('w')as f:config.write(f,space_around_delimiters=False)
  icons=resource/'browser/chrome/icons/default';icons.mkdir(parents=True,exist_ok=True)
  for size in [16,32,48,64,128]:shutil.copy2(ROOT/f'assets/icon{size}.png',icons/f'default{size}.png')
  distribution=resource/'distribution';distribution.mkdir(exist_ok=True)
- (distribution/'distribution.ini').write_text('[Global]\nid=org.altstack.venture\nversion='+META['version']+'\nabout=Venture by Artemis Softworks LLC\n[Preferences]\napp.distributor="Artemis Softworks LLC"\napp.distributor.channel="venture"\n')
+ (distribution/'distribution.ini').write_text('[Global]\nid=org.altstack.venture\nversion='+META['version']+'\nabout=Venture by VigilTech\n[Preferences]\napp.distributor="VigilTech"\napp.distributor.channel="venture"\n')
  policies={'policies':{'Homepage':{'URL':'resource://venture/index.html','Locked':False,'StartPage':'homepage'},'DisableTelemetry':True,'DisableFirefoxStudies':True,'DisableAppUpdate':True,'DontCheckDefaultBrowser':True,'DisplayBookmarksToolbar':'always','Preferences':{'browser.startup.homepage_override.mstone':{'Value':'ignore','Status':'default'},'browser.aboutwelcome.enabled':{'Value':False,'Status':'default'},'extensions.activeThemeID':{'Value':'default-theme@mozilla.org','Status':'default'},'app.releaseNotesURL':{'Value':'https://github.com/danecohn/AmerikaVenture/releases','Status':'default'},'browser.startup.homepage_override.buildID':{'Value':'ignore','Status':'default'}}}}
  policies['policies']['Homepage']={'URL':META['platform_url']+'/', 'Locked':False,'StartPage':'homepage'}
- policies['policies']['SearchEngines']={'Add':[{'Name':'AltStack Search','URLTemplate':META['search_url']+'?q={searchTerms}','Method':'GET','IconURL':META['platform_url']+'/logo.svg','Alias':'@altstack','Description':'AltStack Search - private web metasearch'}],'Default':'AltStack Search','DefaultPrivate':'AltStack Search','PreventInstalls':False}
+ policies['policies']['SearchEngines']={'Add':[{'Name':'AltStack Search','URLTemplate':META['search_url']+'?q={searchTerms}','Method':'GET','IconURL':META['platform_url']+'/logo.svg','Alias':'@altstack','Description':'Vigil Search - ad-free web metasearch'}],'Default':'AltStack Search','DefaultPrivate':'AltStack Search','PreventInstalls':False}
  policies['policies']['Preferences'].update({'zen.welcome-screen.seen':{'Value':True,'Status':'default'},'zen.urlbar.replace-newtab':{'Value':False,'Status':'locked'},'zen.theme.gradient':{'Value':False,'Status':'default'},'zen.view.compact.hide-toolbar':{'Value':False,'Status':'default'},'extensions.activeThemeID':{'Value':'firefox-compact-light@mozilla.org','Status':'default'}})
+ search=policies['policies']['SearchEngines'];search['Add'].append({**search['Add'][0],'Name':'Vigil Search','Alias':'@vigil'});search['Default']='Vigil Search';search['DefaultPrivate']='Vigil Search'
  (distribution/'policies.json').write_text(json.dumps(policies,indent=2))
  (resource/'ALTSTACK-SOURCE.json').write_text(json.dumps({**META,'product':'Venture','method':'AltStack chrome resources over the pinned Zen Browser engine; Zen vertical tabs and workspaces retained','modifications':'https://github.com/danecohn/AmerikaVenture','updates':'Manual: download and install a new Venture release. Mozilla automatic app updates are disabled to preserve this distribution.'},indent=2))
  shutil.copy2(ROOT/'LICENSE',resource/'ALTSTACK-LICENSE.txt');shutil.copy2(ROOT/'README.md',resource/'ALTSTACK-README.md')
@@ -85,12 +89,12 @@ def brand_package(app,system):
   from windows_resources import replace_resources
   replace_resources(resource/'zen.exe',ROOT/'assets/venture.ico')
   for manifest in resource.glob('*.VisualElementsManifest.xml'):
-   text=manifest.read_text();text=re.sub(r'DisplayName="[^"]*"','DisplayName="AltStack Venture"',text);manifest.write_text(text)
+   text=manifest.read_text();text=re.sub(r'DisplayName="[^"]*"','DisplayName="Vigil Venture"',text);manifest.write_text(text)
   for f in ['VisualElements_150.png','VisualElements_70.png']:
    p=resource/'browser/VisualElements'/f
    if p.exists():shutil.copy2(ROOT/'assets/icon256.png',p)
  if system=='macos':
-  p=app/'Contents/Info.plist';v=plistlib.loads(p.read_bytes());v.update(CFBundleName='AltStack Venture',CFBundleDisplayName='AltStack Venture',CFBundleIdentifier='org.altstack.venture',CFBundleIconFile='venture.icns');p.write_bytes(plistlib.dumps(v));shutil.copy2(ROOT/'assets/venture.icns',resource/'venture.icns')
+  p=app/'Contents/Info.plist';v=plistlib.loads(p.read_bytes());v.update(CFBundleName='Vigil Venture',CFBundleDisplayName='Vigil Venture',CFBundleIdentifier='org.altstack.venture',CFBundleIconFile='venture.icns');p.write_bytes(plistlib.dumps(v));shutil.copy2(ROOT/'assets/venture.icns',resource/'venture.icns')
   signature=app/'Contents/_CodeSignature'
   if signature.exists():shutil.rmtree(signature)
   entitlements=ROOT/'assets/entitlements.plist';subprocess.run(['codesign','--force','--deep','--sign','-','--entitlements',str(entitlements),str(app)],check=True)

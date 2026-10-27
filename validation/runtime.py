@@ -32,9 +32,22 @@ with tempfile.TemporaryDirectory(prefix='venture-runtime-',ignore_cleanup_errors
    return reply[3]
   command('WebDriver:NewSession',{'capabilities':{'alwaysMatch':{'pageLoadStrategy':'none'}}})
   command('Marionette:SetContext',{'value':'chrome'})
-  result=command('WebDriver:ExecuteAsyncScript',{'script':'''const done=arguments[arguments.length-1];(async()=>{const {SearchService}=ChromeUtils.importESModule("moz-src:///toolkit/components/search/SearchService.sys.mjs");await SearchService.init();for(let i=0;i<40&&SearchService.defaultEngine.name!=='AltStack Search';i++)await new Promise(r=>setTimeout(r,250));const engine=SearchService.defaultEngine;done({engine:engine.name,privateEngine:SearchService.defaultPrivateEngine.name,url:engine.getSubmission('runtime-check').uri.spec,homepage:Services.prefs.getStringPref('browser.startup.homepage'),policies:Services.policies.getActivePolicies()});})().catch(e=>done({error:String(e)}));''','args':[],'newSandbox':True,'sandbox':'default','scriptTimeout':30000})
-  value=result.get('value',result);assert value.get('engine')=='AltStack Search',value;assert value.get('privateEngine')=='AltStack Search',value;assert value.get('url')=='https://www.amerika.social/search?q=runtime-check',value;assert value.get('homepage')=='https://www.amerika.social/',value
+  result=command('WebDriver:ExecuteAsyncScript',{'script':'''const done=arguments[arguments.length-1];(async()=>{const {SearchService}=ChromeUtils.importESModule("moz-src:///toolkit/components/search/SearchService.sys.mjs");await SearchService.init();for(let i=0;i<40&&SearchService.defaultEngine.name!=='Vigil Search';i++)await new Promise(r=>setTimeout(r,250));const engine=SearchService.defaultEngine;done({engine:engine.name,privateEngine:SearchService.defaultPrivateEngine.name,url:engine.getSubmission('runtime-check').uri.spec,homepage:Services.prefs.getStringPref('browser.startup.homepage'),policies:Services.policies.getActivePolicies()});})().catch(e=>done({error:String(e)}));''','args':[],'newSandbox':True,'sandbox':'default','scriptTimeout':30000})
+  value=result.get('value',result);assert value.get('engine')=='Vigil Search',value;assert value.get('privateEngine')=='Vigil Search',value;assert value.get('url')=='https://www.amerika.social/search?q=runtime-check',value;assert value.get('homepage')=='https://www.amerika.social/',value
   print(json.dumps({'defaultSearch':value['engine'],'searchURL':value['url'],'homepage':value['homepage']}))
+  # Read the actual native chrome palette in each appearance, in this temporary test profile.
+  def luminance(c):
+   values=[int(c.lstrip('#')[i:i+2],16)/255 for i in (0,2,4)]
+   values=[v/12.92 if v<=.04045 else ((v+.055)/1.055)**2.4 for v in values]
+   return sum(v*w for v,w in zip(values,(.2126,.7152,.0722)))
+  for theme in [0,1]:
+   palette=command('WebDriver:ExecuteAsyncScript',{'script':"""const done=arguments[arguments.length-1];Services.prefs.setIntPref('ui.systemUsesDarkTheme',arguments[0]);setTimeout(()=>{const w=Services.wm.getMostRecentWindow('navigator:browser'),s=w.getComputedStyle(w.document.documentElement);done(Object.fromEntries(['ink','ink-2','bar','strip','tab','field','hover','press'].map(k=>[k,s.getPropertyValue('--vt-'+k).trim()])));},300);""",'args':[theme],'newSandbox':True,'sandbox':'default','scriptTimeout':5000})
+   palette=palette.get('value',palette);assert all(palette.values()),palette
+   for fg in ['ink','ink-2']:
+    for bg in ['bar','strip','tab','field','hover','press']:
+     a,b=luminance(palette[fg]),luminance(palette[bg]);ratio=(max(a,b)+.05)/(min(a,b)+.05);assert ratio>=4.5,(theme,fg,bg,ratio,palette)
+   print(json.dumps({'nativeChromeTheme':theme,'readablePalettePairs':12,'palette':palette}))
+
   command('WebDriver:ExecuteScript',{'script':"Services.wm.getMostRecentWindow('navigator:browser').BrowserCommands.openTab();return true;",'args':[],'newSandbox':True,'sandbox':'default'})
   current=''
   for _ in range(60):
